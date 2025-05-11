@@ -1,4 +1,5 @@
 
+{% load math_filters %}
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
@@ -25,8 +26,52 @@
             <div class="tab active" data-tab="active">Active Polls</div>
             <div class="tab" data-tab="completed">Completed Polls</div>
         </div>
-
         <div class="tab-content active" id="active-tab">
+            <div class="card poll-card" data-id="1">
+                {% for x in poll %}
+                <div class="card-header">
+                    <h3>{{x.title}}</h3>
+                </div>
+                <p>{{x.description}}</p>
+                <p>
+                    <strong>Voters:</strong>
+                    {% for z in voter %}
+                    {{z.name}},
+                    {%endfor %}
+                </p>
+                <div class="poll-options">
+                    {% for y in poll_options %}
+                    <div class="option-item">
+                        <input type="radio" name="polloption_1" id="option_1_0" class="option-radio">
+                        <label for="option_1_0" class="option-text" >{{y.text}}</label>
+                        <span class="option-percentage">{{y.voter_n|percentage:x.total_voters}}%</span>
+                        <!-- int(y.voter_n)/int(x.total_voters) -->
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width:0%" ></div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                <div class="poll-results">
+                    <div class="result-item">
+                        <div class="result-header">
+                            <span class="result-lable">Totall Votes:</span>
+                            <span class="result-vlaue">{{x.total_voters}}</span>
+                        </div>
+                    </div>
+                    <div class="result-item">
+                        <div class="result-header">
+                            <span class="result-label">Time Remaining:</span>
+                            <span class="result-value">{{x.duration}} days</span>
+                        </div>
+                    </div>
+                </div>
+                <button class="btn btn-primary submit-vote" style="width: 100%; margin-top: 1rem" data-id="1">
+                    <i class="fas fa-vote-yea"></i>
+                    " Submit vote"
+                </button>
+                {% endfor %}
+            </div>
             <div id="activePollsContainer">
                 <!-- Active polls will be dynamically added here -->
             </div>
