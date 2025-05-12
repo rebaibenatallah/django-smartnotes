@@ -27,20 +27,28 @@
             <div class="tab" data-tab="completed">Completed Polls</div>
         </div>
         <div class="tab-content active" id="active-tab">
+            {% for x in poll %}
             <div class="card poll-card" data-id="1">
-                {% for x in poll %}
                 <div class="card-header">
                     <h3>{{x.title}}</h3>
                 </div>
                 <p>{{x.description}}</p>
                 <p>
                     <strong>Voters:</strong>
-                    {% for z in voter %}
-                    {{z.name}},
-                    {%endfor %}
+                    <!-- select voter from database [select (z):voter.name from voter where id_poll_option in [select (y):id_poll_option where id_poll = (x):poll.id] ]  -->
+                    {% for y in poll_options %}
+                        {% for z in voter %}
+                            {% if y.Id_poll.id == x.id %}
+                                {% if z.Id_poll_option.id == y.id %}
+                                    {{z.name}},
+                                {% endif %}
+                            {% endif %}
+                        {% endfor %}
+                    {% endfor %}
                 </p>
                 <div class="poll-options">
                     {% for y in poll_options %}
+                    {% if y.Id_poll.id == x.id %}
                     <div class="option-item">
                         <input type="radio" name="polloption_1" id="option_1_0" class="option-radio">
                         <label for="option_1_0" class="option-text" >{{y.text}}</label>
@@ -50,6 +58,7 @@
                             <div class="progress-fill" style="width:0%" ></div>
                         </div>
                     </div>
+                    {% endif %}
                     {% endfor %}
                 </div>
                 <div class="poll-results">
@@ -70,8 +79,8 @@
                     <i class="fas fa-vote-yea"></i>
                     " Submit vote"
                 </button>
-                {% endfor %}
             </div>
+            {% endfor %}
             <div id="activePollsContainer">
                 <!-- Active polls will be dynamically added here -->
             </div>
@@ -106,18 +115,20 @@
                 <h3 class="modal-title">Create New Poll</h3>
                 <button class="modal-close" id="closeModal">&times;</button>
             </div>
-            <form id="pollForm">
+            <!-- id="pollForm" -->
+            <form  method="POST">
+                {% csrf_token %}
                 <div class="form-group">
                     <label for="pollTitle" class="form-label">Poll Title</label>
-                    <input type="text" id="pollTitle" class="form-control" placeholder="Enter poll title" required>
+                    <input name="title" type="text" id="pollTitle" class="form-control" placeholder="Enter poll title" required>
                 </div>
                 <div class="form-group">
                     <label for="pollDescription" class="form-label">Description (Optional)</label>
-                    <textarea id="pollDescription" class="form-control" rows="3" placeholder="Enter poll description"></textarea>
+                    <textarea name="Description" id="pollDescription" class="form-control" rows="3" placeholder="Enter poll description"></textarea>
                 </div>
                 <div class="form-group">
                     <label for="pollDuration" class="form-label">Duration</label>
-                    <select id="pollDuration" class="form-control" required>
+                    <select name="Duration" id="pollDuration" class="form-control" required>
                         <option value="">Select duration</option>
                         <option value="1">1 day</option>
                         <option value="3">3 days</option>
@@ -130,13 +141,13 @@
                     <label class="form-label">Poll Options</label>
                     <div id="pollOptionsContainer">
                         <div class="participant-item" style="margin-bottom: 0.5rem;">
-                            <input type="text" class="form-control option-input" placeholder="Enter option text" required>
+                            <input name="poll_option_1" type="text" class="form-control option-input" placeholder="Enter option text" required>
                             <button type="button" class="action-btn delete remove-option">
                                 <i class="fas fa-trash"></i>
                             </button>
                         </div>
                         <div class="participant-item" style="margin-bottom: 0.5rem;">
-                            <input type="text" class="form-control option-input" placeholder="Enter option text" required>
+                            <input name="poll_option_2" type="text" class="form-control option-input" placeholder="Enter option text" required>
                             <button type="button" class="action-btn delete remove-option">
                                 <i class="fas fa-trash"></i>
                             </button>
